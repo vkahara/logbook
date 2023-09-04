@@ -1,0 +1,14 @@
+from django.urls import path
+from . import views
+
+app_name = 'lokikirja_app'
+
+urlpatterns = [
+    path('accounts/login/', views.login_view, name='login'),
+    path('accounts/register/', views.register, name='register'),
+    path('', views.index, name='index'),
+    path('create_event/', views.create_event, name='create_event'),
+    path('logbook/<int:event_id>/', views.logbook_detail, name='logbook_detail'),
+    path('toggle_mirror/<int:logbook_id>/', views.toggle_mirror, name='toggle_mirror'),
+
+]

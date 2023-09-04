@@ -1,0 +1,102 @@
+{% extends 'lokikirja_app/base.html' %}
+
+{% block content %}
+
+<div class="navbar">
+  <a href="{% url 'lokikirja_app:index' %}">Koti</a>
+  <div class="dropdown">
+    <button class="dropbtn" onclick="toggleDropdown()">Lokikirjat
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div id="dropdown-content" class="dropdown-content">
+      <h3>Tapahtuman Lokikirjat</h3>
+      <ul>
+      {% for logbook in logbooks %}
+        <li>
+          <div style="display: flex; align-items: center;">
+            <div>
+              {{ logbook.user }} - {{ logbook.created_at }}
+            </div>
+            {% if logbook.user != user %}
+              <form method="POST" style="margin-left: 10px;" action="{% url 'lokikirja_app:toggle_mirror' logbook.id %}">
+                {% csrf_token %}
+                <input id="mirror-{{ logbook.id }}" type="checkbox" onchange="this.form.submit()" {% if logbook in user.mirrorlogbook.mirrored_logbooks.all %}checked{% endif %}>
+              </form>
+            {% endif %}
+          </div>
+        </li>
+      {% empty %}
+        <li>Ei muita lokikirjoja.</li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div> 
+</div>
+
+
+  <h1>{{ event.name }}</h1>
+  <p>luotu: {{ event.created_at }}</p>
+  <br>
+
+  <h3>Lokit</h3>
+  {% for entry in logbook_entries %}
+    {% if entry.logbook.user != user %}
+      <li class="mirrored_log_entries"><strong>{{ entry.created_at|date:"F d, Y H:i:s" }} {{entry.user}}</strong> <br> - {{ entry.message }} </li>
+    {% else %}
+      <li class="log_entries"><strong>{{ entry.created_at|date:"F d, Y H:i:s" }} {{entry.user}}</strong> <br> - {{ entry.message }} </li>
+    {% endif %}
+{% empty %}
+    <li>Ei lokeja.</li>
+{% endfor %}
+
+  <h3>Lisää loki</h3>
+  <form method="POST" action="{% url 'lokikirja_app:logbook_detail' event_id=event.id %}" class="logbook-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="submit-button">Lisää</button>
+  </form>
+
+
+  
+  <h3>Tapahtuman Lokikirjat</h3>
+  <ul>
+  {% for logbook in logbooks %}
+    <li>
+      <div style="display: flex; align-items: center;">
+        <div>
+          {{ logbook.user }} - {{ logbook.created_at }}
+        </div>
+        {% if logbook.user != user %}
+          <form method="POST" style="margin-left: 10px;" action="{% url 'lokikirja_app:toggle_mirror' logbook.id %}">
+            {% csrf_token %}
+            <input id="mirror-{{ logbook.id }}" type="checkbox" onchange="this.form.submit()" {% if logbook in user.mirrorlogbook.mirrored_logbooks.all %}checked{% endif %}>
+          </form>
+        {% endif %}
+      </div>
+    </li>
+  {% empty %}
+    <li>Ei muita lokikirjoja.</li>
+  {% endfor %}
+  </ul>
+
+  <script>
+    function toggleDropdown() {
+      document.getElementById("dropdown-content").classList.toggle("show");
+    }
+    
+    // Sulje pudotusvalikko, jos käyttäjä napsauttaa sen ulkopuolella
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    }
+    
+  </script>
+{% endblock %}

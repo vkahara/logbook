@@ -1,0 +1,24 @@
+{% extends 'lokikirja_app/base.html' %}
+
+{% block content %}
+  <h1>Lokikirjasovelluksen proof of concept</h1>
+  <p>Olet kirjautunut sisään käyttäjänä: {{ user }} <p>
+  <h2>Kaikki tapahtumat</h2>
+  {% if events %}
+    <ul class="events">
+      {% for event in events %}
+        <li class="event_links"><a href="{% url 'lokikirja_app:logbook_detail' event.id %}">{{ event.name }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Ei tapahtumia.</p>
+  {% endif %}
+
+  <br>
+
+  <form method="post" action="{% url 'lokikirja_app:create_event' %}">
+    {% csrf_token %}
+    <button type="submit">Luo uusi tapahtuma</button>
+  </form>
+
+{% endblock %}
