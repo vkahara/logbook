@@ -1,5 +1,0 @@
-mirror_logbook.mirrored_logbooks.remove(logbook)
-    else:
-        mirror_logbook.mirrored_logbooks.add(logbook)
-    return redirect("lokikirja_app:logbook_detail", event_id=logbook.event.id)
-
